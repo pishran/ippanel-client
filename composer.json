@@ -1,0 +1,29 @@
+{
+    "name": "pishran/ippanel-client",
+    "description": "PHP client for ippanel api.",
+    "keywords": [
+        "ippanel",
+        "sms",
+        "persian"
+    ],
+    "homepage": "https://github.com/pishran/ippanel-client",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Farid Aghili",
+            "email": "farid@pishranit.ir",
+            "homepage": "https://www.faridaghili.ir",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pishran\\IpPanel\\": "src"
+        }
+    }
+}
