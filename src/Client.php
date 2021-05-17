@@ -167,6 +167,10 @@ class Client
      */
     public function sendPattern(string $patternCode, string $originator, string $recipient, array $values): int
     {
+        foreach ($values as $key => $value) {
+            $values[$key] = (string) $value;
+        }
+
         $response = $this->client->post('/v1/messages/patterns/send', [
             'pattern_code' => $patternCode,
             'originator' => $originator,
