@@ -66,7 +66,8 @@ foreach ($messages as $message) {
 ### ایجاد الگوی پیام‌های پرتکرار
 ```php
 $pattern = $client->createPattern('Your otp is %code%.');
-echo $pattern->code;
+
+echo $pattern->code; // شناسه الگو
 ```
 
 ### ارسال پیام با استفاده از الگو
