@@ -3,7 +3,7 @@
 کلایت پی‌اچ‌پی برای پنل پیامک آی‌پی پنل
 
 ```php
-$client = new Pishran\IpPanel\Client('YOUR_API_KEY');
+$client = new \Pishran\IpPanel\Client('YOUR_API_KEY');
 ```
 
 ## نیازمندی‌ها
