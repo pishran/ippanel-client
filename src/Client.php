@@ -11,7 +11,7 @@ use Pishran\IpPanel\Models\Recipient;
 
 class Client
 {
-    const ENDPOINT = 'http://rest.ippanel.com';
+    const ENDPOINT = 'https://rest.ippanel.com';
 
     /**
      * @var Http
@@ -52,6 +52,11 @@ class Client
     }
 
     /**
+     * @param  string  $originator
+     * @param  string[]  $recipients
+     * @param  string  $message
+     * @return int
+     *
      * @throws Exception
      */
     public function sendMessage(string $originator, array $recipients, string $message): int
@@ -87,6 +92,11 @@ class Client
     }
 
     /**
+     * @param  int  $bulkId
+     * @param  int  $page
+     * @param  int  $limit
+     * @return array<int, Recipient[]|PaginationInfo>
+     *
      * @throws Exception
      */
     public function fetchStatuses(int $bulkId, int $page = 0, int $limit = 10): array
@@ -115,6 +125,10 @@ class Client
     }
 
     /**
+     * @param  int  $page
+     * @param  int  $limit
+     * @return array<int, InboxMessage[]|PaginationInfo>
+     *
      * @throws Exception
      */
     public function fetchInbox(int $page = 0, int $limit = 10): array
@@ -163,6 +177,12 @@ class Client
     }
 
     /**
+     * @param  string  $patternCode
+     * @param  string  $originator
+     * @param  string  $recipient
+     * @param  array<string, mixed>  $values
+     * @return int
+     *
      * @throws Exception
      */
     public function sendPattern(string $patternCode, string $originator, string $recipient, array $values): int

@@ -8,7 +8,14 @@ use Pishran\IpPanel\Models\Response;
 class Http
 {
     const SUPPORTED_STATUS_CODES = [
-        200, 201, 204, 405, 400, 404, 401, 422,
+        200,
+        201,
+        204,
+        405,
+        400,
+        404,
+        401,
+        422,
     ];
 
     /**
@@ -22,10 +29,15 @@ class Http
     protected $timeout;
 
     /**
-     * @var array
+     * @var array<string, string>
      */
     protected $headers;
 
+    /**
+     * @param  string  $baseUrl
+     * @param  int  $timeout
+     * @param  string[]  $headers
+     */
     public function __construct(string $baseUrl, int $timeout, array $headers = [])
     {
         $this->baseUrl = $baseUrl;
@@ -34,6 +46,11 @@ class Http
     }
 
     /**
+     * @param  string  $url
+     * @param  array<string, mixed>  $params
+     * @param  string[]  $headers
+     * @return Response
+     *
      * @throws Exception
      */
     public function get(string $url, array $params = [], array $headers = []): Response
@@ -42,6 +59,11 @@ class Http
     }
 
     /**
+     * @param  string  $url
+     * @param  array<string, mixed>  $data
+     * @param  string[]  $headers
+     * @return Response
+     *
      * @throws Exception
      */
     public function post(string $url, array $data, array $headers = []): Response
@@ -49,6 +71,11 @@ class Http
         return $this->request('POST', $url, $data, [], $headers);
     }
 
+    /**
+     * @param  string  $uri
+     * @param  array<string, string>  $params
+     * @return string
+     */
     protected function getBaseUrl(string $uri, array $params = []): string
     {
         $url = rtrim($this->baseUrl, '/').'/'.ltrim($uri, '/');
@@ -59,6 +86,13 @@ class Http
     }
 
     /**
+     * @param  string  $method
+     * @param  string  $url
+     * @param  array<string, string>  $data
+     * @param  array<string, string>  $params
+     * @param  string[]  $headers
+     * @return Response
+     *
      * @throws Exception
      */
     protected function request(
@@ -70,7 +104,7 @@ class Http
     ): Response {
         $curl = curl_init();
 
-        if (! $headers || count($headers) < 1) {
+        if (count($headers) < 1) {
             $headers = ['Accept: application/json', 'Content-Type: application/json'];
         }
 
@@ -91,7 +125,7 @@ class Http
         }
 
         $response = curl_exec($curl);
-        if ($response === false) {
+        if (is_bool($response) || ! $response) {
             throw new Exception(curl_error($curl), curl_errno($curl));
         }
 
