@@ -147,7 +147,7 @@ class Client
             $msg = new InboxMessage;
             $msg->fromJson($message);
 
-            $messages = $message;
+            $messages[] = $message;
         }
 
         $paginationInfo = new PaginationInfo;
