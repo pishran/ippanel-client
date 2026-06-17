@@ -19,6 +19,11 @@ class Http
     ];
 
     /**
+     * Default SOCKS5h proxy address used when useProxy() is called without an argument.
+     */
+    const DEFAULT_PROXY = '127.0.0.1:2080';
+
+    /**
      * @var string
      */
     protected $baseUrl;
@@ -34,15 +39,53 @@ class Http
     protected $headers;
 
     /**
+     * @var string|null
+     */
+    protected $proxy;
+
+    /**
      * @param  string  $baseUrl
      * @param  int  $timeout
      * @param  string[]  $headers
+     * @param  string|null  $proxy  SOCKS5h proxy address (e.g. '127.0.0.1:2080'), or null to disable.
      */
-    public function __construct(string $baseUrl, int $timeout, array $headers = [])
+    public function __construct(string $baseUrl, int $timeout, array $headers = [], ?string $proxy = null)
     {
         $this->baseUrl = $baseUrl;
         $this->timeout = $timeout;
         $this->headers = $headers;
+        $this->proxy = $proxy;
+    }
+
+    /**
+     * Enable or disable the SOCKS5h proxy used for all subsequent requests.
+     *
+     * Call with no argument (or true) to enable the default proxy address,
+     * with a custom address string to use a specific proxy, or with null/false
+     * to disable proxying entirely.
+     *
+     * @param  string|bool|null  $proxy
+     * @return $this
+     */
+    public function useProxy($proxy = true): self
+    {
+        if ($proxy === false || $proxy === null) {
+            $this->proxy = null;
+        } elseif ($proxy === true) {
+            $this->proxy = self::DEFAULT_PROXY;
+        } else {
+            $this->proxy = $proxy;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getProxy(): ?string
+    {
+        return $this->proxy;
     }
 
     /**
@@ -117,6 +160,11 @@ class Http
         curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $this->timeout);
 
+        if ($this->proxy !== null) {
+            curl_setopt($curl, CURLOPT_PROXY, $this->proxy);
+            curl_setopt($curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
+        }
+
         if ($method === 'POST') {
             curl_setopt($curl, CURLOPT_POST, true);
             curl_setopt($curl, CURLOPT_POSTFIELDS, @json_encode($data));
@@ -126,7 +174,11 @@ class Http
 
         $response = curl_exec($curl);
         if (is_bool($response) || ! $response) {
-            throw new Exception(curl_error($curl), curl_errno($curl));
+            $error = curl_error($curl);
+            $errno = curl_errno($curl);
+            curl_close($curl);
+
+            throw new Exception($error, $errno);
         }
 
         $status = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
