@@ -28,13 +28,35 @@ class Client
      */
     protected $timeout;
 
-    public function __construct(string $apiKey, int $timeout = 30)
+    /**
+     * @param  string  $apiKey
+     * @param  int  $timeout
+     * @param  string|null  $proxy  SOCKS5h proxy address (e.g. '127.0.0.1:2080'), or null to disable.
+     */
+    public function __construct(string $apiKey, int $timeout = 30, ?string $proxy = null)
     {
         $this->apiKey = $apiKey;
         $this->timeout = $timeout;
         $this->client = new Http(self::ENDPOINT, $timeout, [
             'Authorization: AccessKey '.$this->apiKey,
-        ]);
+        ], $proxy);
+    }
+
+    /**
+     * Enable or disable the SOCKS5h proxy used for all requests.
+     *
+     * Call with no argument to enable the default proxy address (127.0.0.1:2080),
+     * with a custom address string to use a specific proxy, or with null/false
+     * to disable proxying.
+     *
+     * @param  string|bool|null  $proxy
+     * @return $this
+     */
+    public function useProxy($proxy = true): self
+    {
+        $this->client->useProxy($proxy);
+
+        return $this;
     }
 
     /**
